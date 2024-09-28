@@ -1,0 +1,38 @@
+{
+    "name": "wyzheng/pay-model",
+    "license": "MIT",
+    "type": "library",
+    "version": "v1.0.0",
+    "keywords": [
+        "pay",
+        "payment",
+        "laravel"
+    ],
+    "description": "一个适用于laravel快速开发付款、退款和转账功能的工具包",
+    "autoload": {
+        "psr-4": {
+            "Ugly\\Pay\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "wyzheng",
+            "email": "wyzheng1997@163.com"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "laravel/framework": "^9.0|^10.0|^11.0",
+        "ext-bcmath": "*"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.10"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ugly\\Pay\\ServiceProvider"
+            ]
+        }
+    }
+}
