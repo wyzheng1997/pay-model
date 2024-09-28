@@ -3,12 +3,12 @@
 namespace Ugly\Pay;
 
 use Ugly\Pay\Enums\PayLogType;
-use Ugly\Pay\Supports\PayLog;
+use Ugly\Pay\Supports\PayUtils;
 
 /**
  * 收款.
  */
-class Receive extends PayLog
+class Receive extends PayUtils
 {
     protected ?PayLogType $type = PayLogType::RECEIVE;
 }

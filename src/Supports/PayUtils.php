@@ -3,11 +3,13 @@
 namespace Ugly\Pay\Supports;
 
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Ugly\Pay\Enums\PayLogStatus;
 use Ugly\Pay\Enums\PayLogType;
-use Ugly\Pay\Models\PayLogModel;
+use Ugly\Pay\Models\PayModel;
 
-class PayLog
+class PayUtils
 {
     /**
      * 支付渠道.
@@ -36,15 +38,11 @@ class PayLog
 
     /**
      * 付款人.
-     *
-     * @var mixed|null
      */
     protected mixed $payer = null;
 
     /**
      * 收款人.
-     *
-     * @var mixed|null
      */
     protected mixed $receiver = null;
 
@@ -57,6 +55,11 @@ class PayLog
      * 过期时间.
      */
     protected ?Carbon $expiredAt = null;
+
+    public static function make(): static
+    {
+        return new static;
+    }
 
     public function setExpiredAt(Carbon $expiredAt): static
     {
@@ -114,10 +117,16 @@ class PayLog
         return $this;
     }
 
-    protected function createPayLog()
+    protected function create()
     {
-        return PayLogModel::query()->create([
-            'no' => PayLogModel::generateNo(),
+        // 生成支付单号
+        $no = config('ugly.pay.no_prefix', 'NO')
+            .date('ymdHis')
+            .substr(explode(' ', microtime())[0], 2)
+            .Str::random(5);
+
+        return PayModel::query()->create([
+            'no' => $no,
             'order_no' => $this->orderNo,
             'channel' => $this->channel,
             'amount' => $this->amount,
@@ -131,5 +140,45 @@ class PayLog
             'receiver_id' => $this->receiver?->getKey(),
             'receiver_type' => $this->receiver?->getMorphClass(),
         ]);
+    }
+
+    /**
+     * 执行交易，调用支付渠道的对应方法.
+     */
+    public function execute(array $data = []): mixed
+    {
+        return DB::transaction(function () use ($data) {
+            $model = $this->create();
+            $method = strtolower($this->type->name);
+            $channelInstance = new $model->channel;
+
+            return $channelInstance->$method($model, $data);
+        });
+    }
+
+    /**
+     * 触发支付成功.
+     */
+    public static function success(string $no, array $data = []): void
+    {
+        DB::transaction(function () use ($no, $data) {
+            $payModel = PayModel::query()
+                ->lockForUpdate()
+                ->where('no', $no)
+                ->where('status', PayLogStatus::PROCESSING)
+                ->first();
+            if ($payModel) {
+                $payModel->fill(array_merge([
+                    'success_at' => now(),
+                    'status' => PayLogStatus::SUCCESS,
+                ], $data))->save();
+
+                // 成功后执行对应的任务.
+                $job = $payModel->job;
+                if ($job && class_exists($job) && method_exists($job, 'dispatchSync')) {
+                    call_user_func([$job, 'dispatchSync'], $payModel);
+                }
+            }
+        });
     }
 }
