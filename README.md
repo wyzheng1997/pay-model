@@ -3,7 +3,7 @@
 > 此扩展包是把所有的支付场景都粗暴的分为收款、转账和退款三个类别。通过支付通道（channel）和任务（job）将支付款流程和业务逻辑解耦，让开发者更专注于业务本身。
 
 # 安装
-```
+```bash
 composer require wyzheng/pay-model
 
 php artisan vendor:publish --provider="Ugly\Pay\ServiceProvider"
