@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Ugly\Pay\Casts\Amount;
-use Ugly\Pay\Enums\PayLogStatus;
-use Ugly\Pay\Enums\PayLogType;
+use Ugly\Pay\Enums\PayStatus;
+use Ugly\Pay\Enums\PayType;
 
 class PayModel extends Model
 {
@@ -16,8 +16,8 @@ class PayModel extends Model
 
     protected $casts = [
         'amount' => Amount::class,
-        'type' => PayLogType::class,
-        'status' => PayLogStatus::class,
+        'type' => PayType::class,
+        'status' => PayStatus::class,
         'attach' => 'json',
     ];
 

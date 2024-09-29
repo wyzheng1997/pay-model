@@ -2,13 +2,13 @@
 
 namespace Ugly\Pay;
 
-use Ugly\Pay\Enums\PayLogType;
-use Ugly\Pay\Supports\PayUtils;
+use Ugly\Pay\Enums\PayType;
+use Ugly\Pay\Supports\CreatePayment;
 
 /**
  * 收款.
  */
-class Receive extends PayUtils
+class Receive extends CreatePayment
 {
-    protected ?PayLogType $type = PayLogType::RECEIVE;
+    protected ?PayType $type = PayType::RECEIVE;
 }

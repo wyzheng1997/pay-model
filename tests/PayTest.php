@@ -3,8 +3,7 @@
 namespace Ugly\Pay\Tests;
 
 use Ugly\Pay\Models\PayModel;
-use Ugly\Pay\Receive;
-use Ugly\Pay\Refund;
+use Ugly\Pay\Supports\PayUtils;
 
 class TestChannel
 {
@@ -19,6 +18,7 @@ class TestChannel
     public function refund(PayModel $order, array $data = [])
     {
         $data['method'] = 'refund';
+        $data['receive_order_id'] = $order->receiveOrder->id;
 
         return $data;
     }
@@ -26,7 +26,6 @@ class TestChannel
     public function transfer(PayModel $order, array $data = [])
     {
         $data['method'] = 'transfer';
-        $data['receive_order_id'] = $order->receiveOrder->id;
 
         return $data;
     }
@@ -42,7 +41,7 @@ class PayTest extends TestCase
     public function test_receive_and_refund()
     {
         // 收款
-        $receive = Receive::make()
+        $receive = PayUtils::receive()
             ->setChannel(TestChannel::class)
             ->setOrderNo('test_receive')
             ->setAmount(12.5)
@@ -53,7 +52,7 @@ class PayTest extends TestCase
         $this->assertEquals('receive', $receive['method']);
 
         // 退款
-        $refund = Refund::make()
+        $refund = PayUtils::refund()
             ->setReceiveOrder($receive['id'])
             ->setOrderNo('test_refund')
             ->setAmount(12.5)
@@ -61,6 +60,19 @@ class PayTest extends TestCase
 
         $this->assertEquals('测试退款', $refund['desc']);
         $this->assertEquals('refund', $refund['method']);
-        $this->assertEquals('receive_order_id', $receive['id']);
+        $this->assertEquals($refund['receive_order_id'], $receive['id']);
+    }
+
+    public function test_transfer()
+    {
+        $transfer = PayUtils::transfer()
+            ->setChannel(TestChannel::class)
+            ->setOrderNo('test_transfer')
+            ->setAmount(12.5)
+            ->setJob('test')
+            ->execute(['openid' => 'test']);
+
+        $this->assertEquals('test', $transfer['openid']);
+        $this->assertEquals('transfer', $transfer['method']);
     }
 }

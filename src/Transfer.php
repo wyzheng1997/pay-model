@@ -2,13 +2,13 @@
 
 namespace Ugly\Pay;
 
-use Ugly\Pay\Enums\PayLogType;
-use Ugly\Pay\Supports\PayUtils;
+use Ugly\Pay\Enums\PayType;
+use Ugly\Pay\Supports\CreatePayment;
 
 /**
  * 转账.
  */
-class Transfer extends PayUtils
+class Transfer extends CreatePayment
 {
-    protected ?PayLogType $type = PayLogType::TRANSFER;
+    protected ?PayType $type = PayType::TRANSFER;
 }

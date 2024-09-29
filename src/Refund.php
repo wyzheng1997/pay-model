@@ -2,16 +2,16 @@
 
 namespace Ugly\Pay;
 
-use Ugly\Pay\Enums\PayLogType;
+use Ugly\Pay\Enums\PayType;
 use Ugly\Pay\Models\PayModel;
-use Ugly\Pay\Supports\PayUtils;
+use Ugly\Pay\Supports\CreatePayment;
 
 /**
  * 退款.
  */
-class Refund extends PayUtils
+class Refund extends CreatePayment
 {
-    protected ?PayLogType $type = PayLogType::REFUND;
+    protected ?PayType $type = PayType::REFUND;
 
     protected ?PayModel $receiveOrder = null;
 
