@@ -2,7 +2,7 @@
     "name": "wyzheng/pay-model",
     "license": "MIT",
     "type": "library",
-    "version": "v1.0.0",
+    "version": "v1.0.1",
     "keywords": [
         "pay",
         "payment",
@@ -17,7 +17,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "laravel/framework": "^11.0",
+        "laravel/framework": "^11.0|^12.0",
         "ext-bcmath": "*"
     },
     "require-dev": {
