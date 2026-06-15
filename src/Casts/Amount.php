@@ -19,7 +19,9 @@ class Amount implements CastsAttributes
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): float
     {
-        return (float) bcdiv($value, 100, $this->scale);
+        // null 默认当成 0 分处理
+        $val = $value ?? '0';
+        return (float) bcdiv($val, 100, $this->scale);
     }
 
     /**
@@ -29,6 +31,8 @@ class Amount implements CastsAttributes
      */
     public function set(Model $model, string $key, mixed $value, array $attributes): int
     {
-        return (int) bcmul($value, 100, 0);
+        // 存入库时也兜底 null，防止计算异常
+        $val = $value ?? '0';
+        return (int) bcmul($val, 100, 0);
     }
 }
